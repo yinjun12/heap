@@ -1,0 +1,58 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+#include<initializer_list>
+using namespace std;
+template<typename T>
+class Heap
+{
+private:
+	vector<T>m_vHeap;
+public:
+	void CreateMinHeap(const vector<T> &vec)//根据一个vector容器来创建最小堆
+	{
+		m_vHeap.resize(vec.size(), INT_MAX);//初始化堆
+		int j = 0;
+		for (int i = 0; i < vec.size(); i++)
+		{
+			m_vHeap[j] = vec[i];
+			AdjustMinHeap(j);//每次插入后进入调整堆的顺序！
+			j++;
+		}
+	}
+	void AdjustMinHeap(int j)//建堆的核心！！调整堆的顺序！这是调整最小堆的顺序
+	{
+		if (j == 0)
+			return;
+		int m = j;
+		while (m - 1 >= 0 && m_vHeap[m] < m_vHeap[(m - 1) / 2])// 每个m的父结点都为(m-1)/2，若结点比父结点小则开始调整顺序
+		{
+			int minIndex = m;
+			if (m % 2 != 0)//如果结点位置为奇，这它的兄弟结点是下一个，即m+1;m与m+1比较，得到最小的与父结点交换！
+			{
+				if (m < m_vHeap.size() - 1)//如果此时它为最后一个结点，直接与父结点交换
+					minIndex = m_vHeap[m] < m_vHeap[m + 1] ? m : m + 1;
+
+			}
+			else//结点位置为偶，则它的兄弟结点是上一个，即m-1;
+			{
+				minIndex = m_vHeap[m] < m_vHeap[m - 1] ? m : m - 1;
+
+			}
+			swap(m_vHeap[(m - 1) / 2], m_vHeap[minIndex]);//与父结点交换
+			m = (m - 1) / 2;//交换后继续处理父结点
+		}
+	}
+	void InsertHeap(const T &val)
+	{
+		m_vHeap.push_back(val);
+		AdjustMinHeap(m_vHeap.size() - 1);
+	}
+	void DeleteHeap()
+	{
+		swap(m_vHeap[0], m_vHeap.back());
+		m_vHeap.pop_back();
+		for (int i = 0; i < m_vHeap.size(); i++)
+			AdjustMinHeap(i);
+	}
+};
